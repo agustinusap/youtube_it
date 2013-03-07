@@ -126,7 +126,7 @@ class YouTubeIt
 
       # *Fixnum*:: Number of comments for this video
       attr_reader :comment_count
-      
+
       # *String*:: State of the video (processing, restricted, deleted, rejected and failed)
       attr_reader :state
 
@@ -135,7 +135,7 @@ class YouTubeIt
 
       # *Boolean*:: Whether or not a video is private. Non-standard name to avoid collision with Rubys own 'private' stuff.
       attr_reader :perm_private
- 
+
       # Geodata
       attr_reader :position
       attr_reader :latitude
@@ -161,8 +161,8 @@ class YouTubeIt
       # Useful if you have to delete this video from a playlist
       #
       # === Example
-      #   >> video.in_playlist_id 
-      #   => "PLk3UVPlPEkey09s2W02R48WMDKjvSb6Hq" 
+      #   >> video.in_playlist_id
+      #   => "PLk3UVPlPEkey09s2W02R48WMDKjvSb6Hq"
       #
       # === Returns
       #   String the video id
@@ -279,10 +279,22 @@ EDOC
 
       # The URL needed for embedding the video in a page.
       #
+      # == Parameters
+      #   :type<String>:: The string code of the embed url.['old', 'new']
+      #   :params<Hash>:: Optional parameters for embedded URL.
+      #
       # === Returns
       #   String: Absolute URL for embedding video
-      def embed_url
-        @player_url.sub('watch?', '').sub('=', '/').sub('feature/', 'feature=')
+      def embed_url(type='old', params={})
+        if type == 'new'
+          opts = {:protocol => params[:protocol] || "http",
+                  :url_params => params[:url_params] || {}
+                  }
+          url_opts = opts[:url_params].empty? ? "" : "?#{Rack::Utils::build_query(opts[:url_params])}"
+          "#{opts[:protocol]}://www.youtube.com/embed/#{unique_id}#{url_opts}"
+        else
+          @player_url.sub('watch?', '').sub('=', '/').sub('feature/', 'feature=')
+        end
       end
 
 
